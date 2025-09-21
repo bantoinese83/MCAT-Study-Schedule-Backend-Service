@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mcat-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./Organized_MCAT_Topics.xlsx:/app/Organized_MCAT_Topics.xlsx:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mcat-network
+
+networks:
+  mcat-network:
+    driver: bridge

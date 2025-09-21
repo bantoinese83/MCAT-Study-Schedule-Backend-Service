@@ -545,12 +545,73 @@ npm run prebuild         # Pre-build tasks (clean + lint)
 
 ### Docker Deployment
 
+#### Quick Start with Docker
+
 ```bash
 # Build Docker image
 docker build -t mcat-schedule-api .
 
 # Run container
 docker run -p 3000:3000 mcat-schedule-api
+```
+
+#### Advanced Docker Usage
+
+```bash
+# Build with specific tag
+docker build -t mcat-schedule-api:latest .
+
+# Run with environment variables
+docker run -p 3000:3000 -e PORT=3000 -e NODE_ENV=production mcat-schedule-api
+
+# Run in detached mode
+docker run -d -p 3000:3000 --name mcat-api mcat-schedule-api
+
+# View logs
+docker logs mcat-api
+
+# Stop container
+docker stop mcat-api
+
+# Remove container
+docker rm mcat-api
+```
+
+#### Docker Compose (Optional)
+
+Create `docker-compose.yml`:
+
+```yaml
+version: '3.8'
+services:
+  mcat-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./Organized_MCAT_Topics.xlsx:/app/Organized_MCAT_Topics.xlsx:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+```
+
+Run with Docker Compose:
+
+```bash
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
 ```
 
 ### Cloud Deployment
